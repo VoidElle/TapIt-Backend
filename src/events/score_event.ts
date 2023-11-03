@@ -1,6 +1,6 @@
 import { EventBaseInterface } from "../interfaces/event_base_interface";
 import { LoggerUtils, LogTypes } from "../utils/loggerUtils";
-import {Socket} from "socket.io";
+import { Socket } from "socket.io";
 
 export class ScoreEvent implements EventBaseInterface {
 

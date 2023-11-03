@@ -22,7 +22,7 @@ io.on(Events.CONNECTION, socket => {
     // Managing events
     socket.on(Events.DISCONNECT, () => new DisconnectEvent(socket).manageEvent());
     socket.on(Events.CREATE_LOBBY, () => new CreateLobbyEvent(socket).manageEvent());
-    socket.on(Events.JOIN_LOBBY, () => new JoinLobbyEvent(socket).manageEvent());
+    socket.on(Events.JOIN_LOBBY, (roomCode: string) => new JoinLobbyEvent(socket, roomCode, io).manageEvent());
     socket.on(Events.SCORE, () => new ScoreEvent(socket).manageEvent());
 
 });

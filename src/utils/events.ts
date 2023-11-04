@@ -5,5 +5,6 @@ export enum Events {
     JOIN_LOBBY = "join_lobby",
     JOIN_SUCCESS = "join_success",
     JOIN_FAIL = "join_fail",
-    SCORE = "score"
+    SCORE = "score",
+    GET_SOCKETS_INFO = "get_sockets_info",
 }

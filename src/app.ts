@@ -8,6 +8,7 @@ import { DisconnectEvent } from "./events/disconnect_event";
 import { CreateLobbyEvent } from "./events/create_lobby_event";
 import { JoinLobbyEvent } from "./events/join_lobby_event";
 import { ScoreEvent } from "./events/score_event";
+import {GetSocketsInfoEvent} from "./events/get_sockets_info_event";
 
 const serverPort = 3000;
 const app = express();
@@ -24,6 +25,7 @@ io.on(Events.CONNECTION, socket => {
     socket.on(Events.CREATE_LOBBY, () => new CreateLobbyEvent(socket).manageEvent());
     socket.on(Events.JOIN_LOBBY, (roomCode: string) => new JoinLobbyEvent(socket, roomCode, io).manageEvent());
     socket.on(Events.SCORE, () => new ScoreEvent(socket).manageEvent());
+    socket.on(Events.GET_SOCKETS_INFO, (roomCode: string) => new GetSocketsInfoEvent(socket, roomCode, io).manageEvent());
 
 });
 

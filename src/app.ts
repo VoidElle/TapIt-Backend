@@ -8,14 +8,19 @@ import { DisconnectEvent } from "./events/disconnect_event";
 import { CreateLobbyEvent } from "./events/create_lobby_event";
 import { JoinLobbyEvent } from "./events/join_lobby_event";
 import { ScoreEvent } from "./events/score_event";
-import {GetSocketsInfoEvent} from "./events/get_sockets_info_event";
-import {SetReadyStatusEvent} from "./events/set_ready_status_event";
+import { GetSocketsInfoEvent } from "./events/get_sockets_info_event";
+import { SetReadyStatusEvent } from "./events/set_ready_status_event";
+
+import connectDB from './db/connectDB'
+
 
 const serverPort = 3000;
 const app = express();
 
 const server = http.createServer(app);
 const io = new Server(server);
+
+connectDB();
 
 io.on(Events.CONNECTION, socket => {
 

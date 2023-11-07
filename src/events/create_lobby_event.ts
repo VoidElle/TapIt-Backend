@@ -11,14 +11,30 @@ export class CreateLobbyEvent implements EventBaseInterface {
         this.socket = socket;
     }
 
-    manageEvent(): void {
+    async manageEvent(): Promise<void> {
 
         LoggerUtils.log(LogTypes.INFO, `Create lobby event triggered (${this.socket.id})`);
 
         const roomCode: number = this.generateSixDigitsRoomCode();
 
         this.socket.join(`${roomCode}`);
-        LoggerUtils.log(LogTypes.INFO, `Socket joined room ${roomCode} (${this.socket.id})`);
+
+        const alreadyExistingLobbies = await prisma.lobby.findMany({
+            where: {
+                leaderSocketId: this.socket.id,
+            }
+        });
+
+        console.log(`FOUND: ${JSON.stringify(alreadyExistingLobbies, undefined, 2)}`);
+
+        const lobby = await prisma.lobby.create({
+            data: {
+                roomId: `${roomCode}`,
+                leaderSocketId: this.socket.id,
+            }
+        });
+
+        console.log(`Socket ${this.socket.id} created and joined a new lobby: ${JSON.stringify(lobby, undefined, 2)}`);
 
         this.socket.emit(Events.CREATE_LOBBY, roomCode);
     }

@@ -2,7 +2,7 @@ export enum Events {
 
     // Core socket events
     CONNECTION = "connection",
-    DISCONNECT = "disconnect",
+    DISCONNECT = "disconnecting",
 
     // Lobby creation events
     CREATE_LOBBY_REQUEST = "CREATE_LOBBY_REQUEST",

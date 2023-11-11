@@ -1,10 +1,10 @@
 import express from "express";
 import http from "http";
-import { Server } from "socket.io";
+import {Server} from "socket.io";
 import { LoggerUtils, LogTypes } from "./utils/loggerUtils";
 import { Events } from "./utils/events";
 
-import { DisconnectEvent } from "./events/disconnect_event";
+import { DisconnectionEvent } from "./events/disconnection_event";
 import { CreateLobbyEvent } from "./events/lobby/create_lobby_event";
 
 import connectDB from './db/connectDB'
@@ -25,7 +25,7 @@ io.on(Events.CONNECTION, socket => {
     LoggerUtils.log(LogTypes.INFO, `Socket connected (${socket.id})`);
 
     // Core events
-    socket.on(Events.DISCONNECT, () => new DisconnectEvent(io, socket).manageEvent());
+    socket.on(Events.DISCONNECT, () => new DisconnectionEvent(io, socket).manageEvent());
 
     // Lobby management requests
     socket.on(Events.CREATE_LOBBY_REQUEST, () => new CreateLobbyEvent(socket, io).manageEvent());

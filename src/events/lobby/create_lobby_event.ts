@@ -32,6 +32,7 @@ export class CreateLobbyEvent implements EventBaseInterface {
 
         // Todo: Save lobby data in the database
 
+        // Generate the response in a json format
         const jsonResponse: JSON = <JSON><any>{
             "lobbyId": roomCode,
             "sockets": [this.socket.id]
@@ -41,6 +42,8 @@ export class CreateLobbyEvent implements EventBaseInterface {
         this.socket.emit(Events.CREATE_LOBBY_RESPONSE_SUCCESS, jsonResponse);
     }
 
+    // Function to generate a six-digit code that will
+    // represent the lobby's identifier
     generateSixDigitsRoomCode(): string {
         return Math.floor(100000 + Math.random() * 900000).toString();
     }

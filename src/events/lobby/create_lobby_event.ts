@@ -1,8 +1,8 @@
-import { EventBaseInterface } from "../../interfaces/event_base_interface";
-import { LoggerUtils, LogTypes } from "../../utils/loggerUtils";
+import {EventBaseInterface} from "../../interfaces/event_base_interface";
+import {LoggerUtils, LogTypes} from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
-import { Events } from "../../utils/events";
-import {RoomsUtils} from "../../utils/roomsUtils";
+import {Events} from "../../utils/events";
+import {RoomUtils, RoomModel} from "../../utils/roomUtils";
 
 export class CreateLobbyEvent implements EventBaseInterface {
 
@@ -19,33 +19,23 @@ export class CreateLobbyEvent implements EventBaseInterface {
         LoggerUtils.log(LogTypes.INFO, `Create lobby event triggered from socket ${this.socket.id}`);
 
         // Generate the room code
-        let roomCode: string = this.generateSixDigitsRoomCode();
-
-        // Prevent multiples lobbies with the same room code
-        while (RoomsUtils.checkIfRoomExists(this.io, roomCode)) {
-            roomCode = this.generateSixDigitsRoomCode();
-        }
+        let roomCode: string = await RoomUtils.generateUniqueLobbyId(prisma);
 
         // Socket joins the room
         await this.socket.join(roomCode);
         LoggerUtils.log(LogTypes.INFO, `Socket ${this.socket.id} joined room ${roomCode}`);
 
-        // Todo: Save lobby data in the database
+        // Saving lobby's data to the database
+        const createdLobby: RoomModel = await RoomUtils.createLobby(prisma, roomCode, this.socket.id);
 
         // Generate the response in a json format
         const jsonResponse: JSON = <JSON><any>{
-            "lobbyId": roomCode,
-            "sockets": [this.socket.id]
+            "lobbyId": createdLobby.roomId,
+            "sockets": [createdLobby.leaderSocketId]
         }
 
         // Emit the success event
         this.socket.emit(Events.CREATE_LOBBY_RESPONSE_SUCCESS, jsonResponse);
-    }
-
-    // Function to generate a six-digit code that will
-    // represent the lobby's identifier
-    generateSixDigitsRoomCode(): string {
-        return Math.floor(100000 + Math.random() * 900000).toString();
     }
 
 }

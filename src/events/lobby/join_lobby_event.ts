@@ -2,7 +2,7 @@ import { EventBaseInterface } from "../../interfaces/event_base_interface";
 import { LoggerUtils, LogTypes } from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import { Events } from "../../utils/events";
-import {RoomsUtils} from "../../utils/roomsUtils";
+import {RoomModel, RoomUtils} from "../../utils/roomUtils";
 
 export class JoinLobbyEvent implements EventBaseInterface {
 
@@ -21,7 +21,7 @@ export class JoinLobbyEvent implements EventBaseInterface {
         LoggerUtils.log(LogTypes.INFO, `Join lobby event triggered from socket ${this.socket.id}`);
 
         // Check if a lobby with the given id exists
-        const roomExist: boolean = RoomsUtils.checkIfRoomExists(this.io, this.lobbyId);
+        const roomExist: boolean = await RoomUtils.doesRoomExists(prisma, this.lobbyId);
 
         // If a lobby with the given id doesn't exist,
         // notify the socket that the lobby hasn't been found
@@ -42,21 +42,16 @@ export class JoinLobbyEvent implements EventBaseInterface {
         await this.socket.join(this.lobbyId);
         LoggerUtils.log(LogTypes.INFO, `${this.socket.id} joined lobby ${this.lobbyId}`);
 
-        // Todo: Register socket join in the database
-
-        // Get the list of sockets inside the given lobby
-        const socketsList = await this.io.in(this.lobbyId).fetchSockets();
-
-        // Get the ids from the list of sockets inside the lobby
-        const socketsIdsList: string[] = [];
-        socketsList.forEach((socket): void => {
-            socketsIdsList.push(socket.id);
-        });
+        // Get lobby from the database
+        const lobby: RoomModel = await RoomUtils.getLobbyFromId(prisma, this.lobbyId);
 
         // Generate the response in a json format
         const jsonResponse: JSON = <JSON><any>{
             "lobbyId": this.lobbyId,
-            "sockets": socketsIdsList,
+            "sockets": [
+                lobby.leaderSocketId,
+                this.socket.id
+            ],
         };
 
         // Emit the success join event to the lobby

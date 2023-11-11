@@ -30,7 +30,7 @@ export class CreateLobbyEvent implements EventBaseInterface {
         await this.socket.join(roomCode);
         LoggerUtils.log(LogTypes.INFO, `Socket ${this.socket.id} joined room ${roomCode}`);
 
-        // Todo: Save lobby data to the server
+        // Todo: Save lobby data in the database
 
         const jsonResponse: JSON = <JSON><any>{
             "lobbyId": roomCode,

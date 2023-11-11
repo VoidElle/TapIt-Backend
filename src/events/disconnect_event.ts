@@ -1,12 +1,14 @@
 import { EventBaseInterface } from "../interfaces/event_base_interface";
 import { LoggerUtils, LogTypes } from "../utils/loggerUtils";
-import { Socket } from "socket.io";
+import {Server, Socket} from "socket.io";
 
 export class DisconnectEvent implements EventBaseInterface {
 
+    io: Server;
     socket: Socket;
 
-    constructor(socket: Socket) {
+    constructor(io: Server, socket: Socket) {
+        this.io = io;
         this.socket = socket;
     }
 

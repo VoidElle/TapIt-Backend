@@ -8,6 +8,8 @@ import { DisconnectEvent } from "./events/disconnect_event";
 import { CreateLobbyEvent } from "./events/lobby/create_lobby_event";
 
 import connectDB from './db/connectDB'
+import {JoinLobbyEvent} from "./events/lobby/join_lobby_event";
+import {QuitLobbyEvent} from "./events/lobby/quit_lobby_event";
 
 
 const serverPort = 3000;
@@ -22,11 +24,13 @@ io.on(Events.CONNECTION, socket => {
 
     LoggerUtils.log(LogTypes.INFO, `Socket connected (${socket.id})`);
 
-    socket.on(Events.DISCONNECT, () => new DisconnectEvent(socket).manageEvent());
+    // Core events
+    socket.on(Events.DISCONNECT, () => new DisconnectEvent(io, socket).manageEvent());
 
     // Lobby management requests
     socket.on(Events.CREATE_LOBBY_REQUEST, () => new CreateLobbyEvent(socket, io).manageEvent());
-
+    socket.on(Events.JOIN_LOBBY_REQUEST, (lobbyId: string) => new JoinLobbyEvent(lobbyId, socket, io).manageEvent());
+    socket.on(Events.QUIT_LOBBY_REQUEST, (lobbyId: string) => new QuitLobbyEvent(lobbyId, socket, io).manageEvent());
 
 });
 

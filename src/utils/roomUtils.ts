@@ -1,4 +1,5 @@
 import {PrismaClient} from "@prisma/client";
+import {Server} from "socket.io";
 
 export interface RoomModel {
     id: number,
@@ -25,6 +26,42 @@ export class RoomUtils {
                 roomId: lobbyId,
             }
         });
+    }
+
+    static async wasSocketTheLeader(prisma: PrismaClient, socketId: string): Promise<boolean> {
+
+        const lobby: RoomModel = await prisma.lobby.findUnique({
+            where: {
+                leaderSocketId: socketId
+            }
+        });
+
+        return lobby != undefined;
+    }
+
+    static async deleteLobby(io: Server, prisma: PrismaClient, lobbyId: string): Promise<void> {
+
+        // Make all sockets leave the room
+        io.socketsLeave(lobbyId);
+
+        await prisma.lobby.delete({
+            where: {
+                roomId: lobbyId
+            }
+        });
+
+    }
+
+    static async getSocketsInsideLobby(io: Server, lobbyId: string): Promise<string[]> {
+
+        const socketsIdsList: string[] = [];
+
+        const socketsList = await io.in(lobbyId).fetchSockets();
+        socketsList.forEach((socket): void => {
+            socketsIdsList.push(socket.id);
+        });
+
+        return socketsIdsList;
     }
 
     static async doesRoomExists(prisma: PrismaClient, lobbyId: string): Promise<boolean> {

@@ -2,6 +2,7 @@ import { EventBaseInterface } from "../interfaces/event_base_interface";
 import { LoggerUtils, LogTypes } from "../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import {Events} from "../utils/events";
+import {RoomUtils} from "../utils/roomUtils";
 
 export class DisconnectionEvent implements EventBaseInterface {
 
@@ -13,17 +14,17 @@ export class DisconnectionEvent implements EventBaseInterface {
         this.socket = socket;
     }
 
-    manageEvent(): void {
+    async manageEvent(): Promise<void> {
 
         LoggerUtils.log(LogTypes.INFO, `Socket disconnected (${this.socket.id})`);
 
         // Get the list of rooms that the socket is inside
         const rooms = this.socket.rooms;
-        rooms.forEach((room: string): void => {
+        for (const room of rooms) {
 
-            // Need to check if the value is a number,
-            // the given set also contains the socket id, so we need to sanitize it
-            if (!isNaN(Number(room))) {
+            // Considering that each socket joins a room that has his socket id,
+            // we need to check to not quit that for socket.io to work
+            if (room != this.socket.id) {
 
                 // Generate the response in a json format
                 const jsonResponseToRoom: JSON = <JSON><any>{
@@ -32,9 +33,16 @@ export class DisconnectionEvent implements EventBaseInterface {
 
                 // Emit the successfully quit event to the lobby
                 this.io.to(room).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponseToRoom);
+
+                const wasSocketTheLeader: boolean = await RoomUtils.wasSocketTheLeader(prisma, this.socket.id);
+                if (wasSocketTheLeader) {
+                    await RoomUtils.deleteLobby(this.io, prisma, room);
+                    this.io.to(room).emit(Events.LEADER_LEFT_LOBBY);
+                }
+
             }
 
-        });
+        }
 
     }
 

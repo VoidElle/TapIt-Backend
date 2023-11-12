@@ -2,6 +2,7 @@ import { EventBaseInterface } from "../../interfaces/event_base_interface";
 import { LoggerUtils, LogTypes } from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import { Events } from "../../utils/events";
+import {RoomUtils} from "../../utils/roomUtils";
 
 export class QuitLobbyEvent implements EventBaseInterface {
 
@@ -30,6 +31,13 @@ export class QuitLobbyEvent implements EventBaseInterface {
 
         // Emit the quit event to the lobby
         this.io.to(this.lobbyId).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponseToRoom);
+
+        const wasSocketTheLeader: boolean = await RoomUtils.wasSocketTheLeader(prisma, this.socket.id);
+        if (wasSocketTheLeader) {
+            await RoomUtils.deleteLobby(this.io, prisma, this.lobbyId);
+            this.io.to(this.lobbyId).emit(Events.LEADER_LEFT_LOBBY);
+        }
+
     }
 
 }

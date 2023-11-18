@@ -21,11 +21,6 @@ const io = new Server(server);
 
 connectDB();
 
-interface PlayerChangeReadyStatusProps {
-    newReadyStatus: boolean;
-    lobbyId: string;
-}
-
 io.on(Events.CONNECTION, socket => {
 
     LoggerUtils.log(LogTypes.INFO, `Socket connected (${socket.id})`);
@@ -37,7 +32,7 @@ io.on(Events.CONNECTION, socket => {
     socket.on(Events.CREATE_LOBBY_REQUEST, () => new CreateLobbyEvent(socket, io).manageEvent());
     socket.on(Events.JOIN_LOBBY_REQUEST, (lobbyId: string) => new JoinLobbyEvent(lobbyId, socket, io).manageEvent());
     socket.on(Events.QUIT_LOBBY_REQUEST, (lobbyId: string) => new QuitLobbyEvent(lobbyId, socket, io).manageEvent());
-    socket.on(Events.PLAYER_CHANGE_READY_STATUS, (data: PlayerChangeReadyStatusProps) => new PlayerChangeReadyStatusEvent(data.newReadyStatus, data.lobbyId, socket, io).manageEvent());
+    socket.on(Events.PLAYER_CHANGE_READY_STATUS, (lobbyId: string) => new PlayerChangeReadyStatusEvent(lobbyId, socket, io).manageEvent());
 
 });
 

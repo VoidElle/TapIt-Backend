@@ -5,13 +5,11 @@ import { Events } from "../../utils/events";
 
 export class PlayerChangeReadyStatusEvent implements EventBaseInterface {
 
-    newReadyStatus: boolean;
     lobbyId: string;
     socket: Socket;
     io: Server;
 
-    constructor(newReadyStatus: boolean, lobbyId: string, socket: Socket, io: Server) {
-        this.newReadyStatus = newReadyStatus;
+    constructor(lobbyId: string, socket: Socket, io: Server) {
         this.lobbyId = lobbyId;
         this.socket = socket;
         this.io = io;
@@ -23,7 +21,6 @@ export class PlayerChangeReadyStatusEvent implements EventBaseInterface {
 
         const jsonResponse: JSON = <JSON><any>{
             "socket": this.socket.id,
-            "newReadyStatus": this.newReadyStatus,
         };
 
         this.io.to(this.lobbyId).emit(Events.PLAYER_CHANGE_READY_STATUS, jsonResponse);

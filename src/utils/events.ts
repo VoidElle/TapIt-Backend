@@ -21,5 +21,6 @@ export enum Events {
 
     // Lobby utils
     LEADER_LEFT_LOBBY = "LEADER_LEFT_LOBBY",
+    PLAYER_CHANGE_READY_STATUS = "PLAYER_CHANGE_READY_STATUS"
 
 }

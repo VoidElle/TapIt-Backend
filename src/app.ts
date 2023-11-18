@@ -10,6 +10,7 @@ import { CreateLobbyEvent } from "./events/lobby/create_lobby_event";
 import connectDB from './db/connectDB'
 import {JoinLobbyEvent} from "./events/lobby/join_lobby_event";
 import {QuitLobbyEvent} from "./events/lobby/quit_lobby_event";
+import {PlayerChangeReadyStatusEvent} from "./events/lobby/player_change_ready_status";
 
 
 const serverPort = 3000;
@@ -19,6 +20,11 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 connectDB();
+
+interface PlayerChangeReadyStatusProps {
+    newReadyStatus: boolean;
+    lobbyId: string;
+}
 
 io.on(Events.CONNECTION, socket => {
 
@@ -31,6 +37,7 @@ io.on(Events.CONNECTION, socket => {
     socket.on(Events.CREATE_LOBBY_REQUEST, () => new CreateLobbyEvent(socket, io).manageEvent());
     socket.on(Events.JOIN_LOBBY_REQUEST, (lobbyId: string) => new JoinLobbyEvent(lobbyId, socket, io).manageEvent());
     socket.on(Events.QUIT_LOBBY_REQUEST, (lobbyId: string) => new QuitLobbyEvent(lobbyId, socket, io).manageEvent());
+    socket.on(Events.PLAYER_CHANGE_READY_STATUS, (data: PlayerChangeReadyStatusProps) => new PlayerChangeReadyStatusEvent(data.newReadyStatus, data.lobbyId, socket, io).manageEvent());
 
 });
 

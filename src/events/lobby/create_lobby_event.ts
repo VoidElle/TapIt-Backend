@@ -3,6 +3,7 @@ import {LoggerUtils, LogTypes} from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import {Events} from "../../utils/events";
 import {RoomUtils, RoomModel} from "../../utils/roomUtils";
+import {SocketModel} from "../../models/socket_model";
 
 export class CreateLobbyEvent implements EventBaseInterface {
 
@@ -28,10 +29,15 @@ export class CreateLobbyEvent implements EventBaseInterface {
         // Saving lobby's data to the database
         const createdLobby: RoomModel = await RoomUtils.createLobby(prisma, roomCode, this.socket.id);
 
+        // Creation of the leader socket model
+        const leaderSocketModel: SocketModel = new SocketModel(createdLobby.leaderSocketId, true);
+
         // Generate the response in a json format
         const jsonResponse: JSON = <JSON><any>{
             "lobbyId": createdLobby.roomId,
-            "sockets": [createdLobby.leaderSocketId]
+            "sockets": [
+                leaderSocketModel.toJson()
+            ]
         }
 
         // Emit the success event

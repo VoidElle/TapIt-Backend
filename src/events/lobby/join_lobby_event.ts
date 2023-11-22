@@ -3,6 +3,8 @@ import { LoggerUtils, LogTypes } from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import { Events } from "../../utils/events";
 import {RoomModel, RoomUtils} from "../../utils/roomUtils";
+import {SocketModel} from "../../models/socket_model";
+import { Messages } from "../../utils/messages";
 
 export class JoinLobbyEvent implements EventBaseInterface {
 
@@ -29,7 +31,7 @@ export class JoinLobbyEvent implements EventBaseInterface {
 
             // Generate the response in a json format
             const jsonResponse: JSON = <JSON><any>{
-                "error": "Lobby not found",
+                "error": Messages.lobbyNotFoundErrorMessage,
             };
 
             // Emit the fail joining event to the socket
@@ -45,12 +47,16 @@ export class JoinLobbyEvent implements EventBaseInterface {
         // Get lobby from the database
         const lobby: RoomModel = await RoomUtils.getLobbyFromId(prisma, this.lobbyId);
 
+        // Creation of the leader and guest socket models
+        const leaderSocketModel: SocketModel = new SocketModel(lobby.leaderSocketId, true);
+        const guestSocketModel: SocketModel = new SocketModel(this.socket.id, false);
+
         // Generate the response in a json format
         const jsonResponse: JSON = <JSON><any>{
             "lobbyId": this.lobbyId,
             "sockets": [
-                lobby.leaderSocketId,
-                this.socket.id
+                leaderSocketModel.toJson(),
+                guestSocketModel.toJson()
             ],
         };
 

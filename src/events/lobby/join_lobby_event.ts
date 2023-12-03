@@ -48,8 +48,8 @@ export class JoinLobbyEvent implements EventBaseInterface {
         const lobby: RoomModel = await RoomUtils.getLobbyFromId(prisma, this.lobbyId);
 
         // Creation of the leader and guest socket models
-        const leaderSocketModel: SocketModel = new SocketModel(lobby.leaderSocketId, true);
-        const guestSocketModel: SocketModel = new SocketModel(this.socket.id, false);
+        const leaderSocketModel: SocketModel = new SocketModel(lobby.leaderSocketId, true, 0);
+        const guestSocketModel: SocketModel = new SocketModel(this.socket.id, false, 1);
 
         // Generate the response in a json format
         const jsonResponse: JSON = <JSON><any>{

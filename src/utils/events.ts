@@ -29,5 +29,6 @@ export enum Events {
     PLAYER_CHANGE_READY_STATUS = "PLAYER_CHANGE_READY_STATUS",
 
     // Game events
-    SCORE = "SCORE"
+    GAME_SCORE = "GAME_SCORE"
+
 }

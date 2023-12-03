@@ -12,6 +12,7 @@ import {JoinLobbyEvent} from "./events/lobby/join_lobby_event";
 import {QuitLobbyEvent} from "./events/lobby/quit_lobby_event";
 import {PlayerChangeReadyStatusEvent} from "./events/lobby/player_change_ready_status";
 import {StartLobbyEvent} from "./events/lobby/start_lobby_event";
+import {GameScoreEvent} from "./events/game/game_score_event";
 
 
 const serverPort = 3000;
@@ -35,6 +36,9 @@ io.on(Events.CONNECTION, socket => {
     socket.on(Events.QUIT_LOBBY_REQUEST, (lobbyId: string) => new QuitLobbyEvent(lobbyId, socket, io).manageEvent());
     socket.on(Events.PLAYER_CHANGE_READY_STATUS, (lobbyId: string) => new PlayerChangeReadyStatusEvent(lobbyId, socket, io).manageEvent());
     socket.on(Events.START_LOBBY_REQUEST, (lobbyId: string) => new StartLobbyEvent(lobbyId, socket, io).manageEvent());
+
+    // Game management requests
+    socket.on(Events.GAME_SCORE, (lobbyId: string) => new GameScoreEvent(lobbyId, socket, io).manageEvent());
 
 });
 

@@ -19,7 +19,12 @@ export class GameScoreEvent implements EventBaseInterface {
 
         LoggerUtils.log(LogTypes.INFO, `Game score event triggered from socket ${this.socket.id}`);
 
-        this.io.to(this.lobbyId).emit(Events.GAME_SCORE, this.socket.id);
+        // Generate the response in a json format
+        const jsonResponse: JSON = <JSON><any>{
+            "socketId": this.socket.id,
+        }
+
+        this.io.to(this.lobbyId).emit(Events.GAME_SCORE_RESPONSE_SUCCESS, jsonResponse);
 
     }
 

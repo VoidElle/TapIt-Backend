@@ -38,7 +38,7 @@ io.on(Events.CONNECTION, socket => {
     socket.on(Events.START_LOBBY_REQUEST, (lobbyId: string) => new StartLobbyEvent(lobbyId, socket, io).manageEvent());
 
     // Game management requests
-    socket.on(Events.GAME_SCORE, (lobbyId: string) => new GameScoreEvent(lobbyId, socket, io).manageEvent());
+    socket.on(Events.GAME_SCORE_REQUEST, (lobbyId: string) => new GameScoreEvent(lobbyId, socket, io).manageEvent());
 
 });
 

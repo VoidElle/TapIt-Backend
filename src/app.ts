@@ -13,6 +13,7 @@ import {QuitLobbyEvent} from "./events/lobby/quit_lobby_event";
 import {PlayerChangeReadyStatusEvent} from "./events/lobby/player_change_ready_status";
 import {StartLobbyEvent} from "./events/lobby/start_lobby_event";
 import {GameScoreEvent} from "./events/game/game_score_event";
+import {GameWinEvent} from "./events/game/game_win_event";
 
 
 const serverPort = 3000;
@@ -39,6 +40,7 @@ io.on(Events.CONNECTION, socket => {
 
     // Game management requests
     socket.on(Events.GAME_SCORE_REQUEST, (lobbyId: string) => new GameScoreEvent(lobbyId, socket, io).manageEvent());
+    socket.on(Events.GAME_WIN_REQUEST, (lobbyId: string) => new GameWinEvent(lobbyId, socket, io).manageEvent());
 
 });
 

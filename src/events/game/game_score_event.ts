@@ -29,6 +29,7 @@ export class GameScoreEvent implements EventBaseInterface {
         socketsInRoom.map((socket: RemoteSocket<DefaultEventsMap, any>): void => {
             if (socket.id != this.socket.id) {
                 victimId = socket.id;
+                return;
             }
         });
 

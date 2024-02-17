@@ -32,10 +32,10 @@ export class QuitLobbyEvent implements EventBaseInterface {
         // Emit the quit event to the lobby
         this.io.to(this.lobbyId).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponseToRoom);
 
-        const wasSocketTheLeader: boolean = await RoomUtils.wasSocketTheLeader(prisma, this.socket.id);
+        const wasSocketTheLeader: boolean = await RoomUtils.isSocketLeaderOfALobby(this.socket.id);
         if (wasSocketTheLeader) {
             this.io.to(this.lobbyId).emit(Events.LEADER_LEFT_LOBBY);
-            await RoomUtils.deleteLobby(this.io, prisma, this.lobbyId);
+            await RoomUtils.deleteLobby(this.io, this.lobbyId);
         }
 
     }

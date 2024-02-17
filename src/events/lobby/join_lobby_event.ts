@@ -23,18 +23,14 @@ export class JoinLobbyEvent implements EventBaseInterface {
         LoggerUtils.log(LogTypes.INFO, `Join lobby event triggered from socket ${this.socket.id}`);
 
         // Check if a lobby with the given id exists
-        const roomExist: boolean = await RoomUtils.doesRoomExists(prisma, this.lobbyId);
+        const roomExist: boolean = await RoomUtils.doesRoomExists(this.lobbyId);
 
         // If a lobby with the given id doesn't exist,
         // notify the socket that the lobby hasn't been found
         if (!roomExist) {
 
-            // Generate the response in a json format
-            const jsonResponse: JSON = <JSON><any>{
-                "error": Messages.lobbyNotFoundErrorMessage,
-            };
-
             // Emit the fail joining event to the socket
+            const jsonResponse: JSON = Messages.generateErrorJson(Messages.lobbyNotFoundErrorMessage);
             this.socket.emit(Events.JOIN_LOBBY_RESPONSE_FAIL, jsonResponse);
 
             return;
@@ -45,7 +41,7 @@ export class JoinLobbyEvent implements EventBaseInterface {
         LoggerUtils.log(LogTypes.INFO, `${this.socket.id} joined lobby ${this.lobbyId}`);
 
         // Get lobby from the database
-        const lobby: RoomModel = await RoomUtils.getLobbyFromId(prisma, this.lobbyId);
+        const lobby: RoomModel = await RoomUtils.getLobbyFromId(this.lobbyId);
 
         // Creation of the leader and guest socket models
         const leaderSocketModel: SocketModel = new SocketModel(lobby.leaderSocketId, true, 0);

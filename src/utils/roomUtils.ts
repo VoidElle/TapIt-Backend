@@ -1,5 +1,4 @@
-import {PrismaClient} from "@prisma/client";
-import {Server} from "socket.io";
+import { Server } from "socket.io";
 
 export interface RoomModel {
     id: number,
@@ -11,7 +10,7 @@ export interface RoomModel {
 
 export class RoomUtils {
 
-    static async createLobby(prisma: PrismaClient, lobbyId: string, leaderSocketId: string): Promise<RoomModel> {
+    static async createLobby(lobbyId: string, leaderSocketId: string): Promise<RoomModel> {
         return prisma.lobby.create({
             data: {
                 roomId: lobbyId,
@@ -20,7 +19,7 @@ export class RoomUtils {
         });
     }
 
-    static async getLobbyFromId(prisma: PrismaClient, lobbyId: string): Promise<RoomModel> {
+    static async getLobbyFromId(lobbyId: string): Promise<RoomModel> {
         return prisma.lobby.findUnique({
             where: {
                 roomId: lobbyId,
@@ -28,7 +27,7 @@ export class RoomUtils {
         });
     }
 
-    static async wasSocketTheLeader(prisma: PrismaClient, socketId: string): Promise<boolean> {
+    static async isSocketLeaderOfALobby(socketId: string): Promise<boolean> {
 
         const lobby: RoomModel = await prisma.lobby.findUnique({
             where: {
@@ -39,7 +38,7 @@ export class RoomUtils {
         return lobby != undefined;
     }
 
-    static async deleteLobby(io: Server, prisma: PrismaClient, lobbyId: string): Promise<void> {
+    static async deleteLobby(io: Server, lobbyId: string): Promise<void> {
 
         // Make all sockets leave the room
         io.socketsLeave(lobbyId);
@@ -69,7 +68,7 @@ export class RoomUtils {
         return socketsIdsList;
     }
 
-    static async doesRoomExists(prisma: PrismaClient, lobbyId: string): Promise<boolean> {
+    static async doesRoomExists(lobbyId: string): Promise<boolean> {
 
         // Find the lobby with the ORM using the lobby id
         const lobby: RoomModel = await prisma.lobby.findUnique({
@@ -83,10 +82,10 @@ export class RoomUtils {
         return lobby != undefined;
     }
 
-    static async generateUniqueLobbyId(prisma: PrismaClient): Promise<string> {
+    static async generateUniqueLobbyId(): Promise<string> {
 
         let roomCode: string = this.generateLobbyCode();
-        while (await RoomUtils.doesRoomExists(prisma, roomCode)) {
+        while (await RoomUtils.doesRoomExists(roomCode)) {
             roomCode = this.generateLobbyCode();
         }
 

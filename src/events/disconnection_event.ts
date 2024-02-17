@@ -19,7 +19,7 @@ export class DisconnectionEvent implements EventBaseInterface {
         LoggerUtils.log(LogTypes.INFO, `Socket disconnected (${this.socket.id})`);
 
         // Get the list of rooms that the socket is inside
-        const rooms = this.socket.rooms;
+        const rooms: Set<string> = this.socket.rooms;
         for (const room of rooms) {
 
             // Considering that each socket joins a room that has his socket id,
@@ -34,9 +34,9 @@ export class DisconnectionEvent implements EventBaseInterface {
                 // Emit the successfully quit event to the lobby
                 this.io.to(room).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponseToRoom);
 
-                const wasSocketTheLeader: boolean = await RoomUtils.wasSocketTheLeader(prisma, this.socket.id);
+                const wasSocketTheLeader: boolean = await RoomUtils.isSocketLeaderOfALobby(this.socket.id);
                 if (wasSocketTheLeader) {
-                    await RoomUtils.deleteLobby(this.io, prisma, room);
+                    await RoomUtils.deleteLobby(this.io, room);
                     this.io.to(room).emit(Events.LEADER_LEFT_LOBBY);
                 }
 

@@ -5,6 +5,7 @@ import { Events } from "../../utils/events";
 import {RoomModel, RoomUtils} from "../../utils/roomUtils";
 import {SocketModel} from "../../models/socket_model";
 import { Messages } from "../../utils/messages";
+import {JsonModelCreator} from "../../utils/json/json_model_creator";
 
 export class JoinLobbyEvent implements EventBaseInterface {
 
@@ -47,16 +48,8 @@ export class JoinLobbyEvent implements EventBaseInterface {
         const leaderSocketModel: SocketModel = new SocketModel(lobby.leaderSocketId, true, 0);
         const guestSocketModel: SocketModel = new SocketModel(this.socket.id, false, 1);
 
-        // Generate the response in a json format
-        const jsonResponse: JSON = <JSON><any>{
-            "lobbyId": this.lobbyId,
-            "sockets": [
-                leaderSocketModel.toJson(),
-                guestSocketModel.toJson()
-            ],
-        };
-
-        // Emit the success join event to the lobby
+        // Emit the SUCCESS event
+        const jsonResponse: JSON = JsonModelCreator.lobbyInformation(this.lobbyId, [ leaderSocketModel, guestSocketModel ]);
         this.io.to(this.lobbyId).emit(Events.JOIN_LOBBY_RESPONSE_SUCCESS, jsonResponse);
 
     }

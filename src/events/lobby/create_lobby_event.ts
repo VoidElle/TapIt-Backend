@@ -5,6 +5,7 @@ import {Events} from "../../utils/events";
 import {RoomUtils, RoomModel} from "../../utils/roomUtils";
 import {SocketModel} from "../../models/socket_model";
 import {Messages} from "../../utils/messages";
+import { JsonModelCreator } from "../../utils/json/json_model_creator";
 
 export class CreateLobbyEvent implements EventBaseInterface {
 
@@ -43,15 +44,8 @@ export class CreateLobbyEvent implements EventBaseInterface {
         // Creation of the leader socket model
         const leaderSocketModel: SocketModel = new SocketModel(createdLobby.leaderSocketId, true, 0);
 
-        // Generate the response in a json format
-        const jsonResponse: JSON = <JSON><any>{
-            "lobbyId": createdLobby.roomId,
-            "sockets": [
-                leaderSocketModel.toJson()
-            ]
-        }
-
-        // Emit the success event
+        // Emit the SUCCESS event
+        const jsonResponse: JSON = JsonModelCreator.lobbyInformation(createdLobby.roomId, [ leaderSocketModel ]);
         this.socket.emit(Events.CREATE_LOBBY_RESPONSE_SUCCESS, jsonResponse);
     }
 

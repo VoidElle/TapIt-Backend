@@ -3,6 +3,7 @@ import { LoggerUtils, LogTypes } from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import { Events } from "../../utils/events";
 import {RoomUtils} from "../../utils/roomUtils";
+import {JsonModelCreator} from "../../utils/json/json_model_creator";
 
 export class QuitLobbyEvent implements EventBaseInterface {
 
@@ -24,13 +25,9 @@ export class QuitLobbyEvent implements EventBaseInterface {
         await this.socket.leave(this.lobbyId);
         LoggerUtils.log(LogTypes.INFO, `Socket ${this.socket.id} left lobby ${this.lobbyId}`);
 
-        // Generate the response in a json format
-        const jsonResponseToRoom: JSON = <JSON><any>{
-            "quittedSocket": this.socket.id
-        };
-
-        // Emit the quit event to the lobby
-        this.io.to(this.lobbyId).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponseToRoom);
+        // Emit the SUCCESS event
+        const jsonResponse: JSON = JsonModelCreator.socketId(this.socket.id);
+        this.io.to(this.lobbyId).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponse);
 
         const wasSocketTheLeader: boolean = await RoomUtils.isSocketLeaderOfALobby(this.socket.id);
         if (wasSocketTheLeader) {

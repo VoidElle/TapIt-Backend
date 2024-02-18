@@ -3,6 +3,7 @@ import { LoggerUtils, LogTypes } from "../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import {Events} from "../utils/events";
 import {RoomUtils} from "../utils/roomUtils";
+import {JsonModelCreator} from "../utils/json/json_model_creator";
 
 export class DisconnectionEvent implements EventBaseInterface {
 
@@ -26,13 +27,9 @@ export class DisconnectionEvent implements EventBaseInterface {
             // we need to check to not quit that for socket.io to work
             if (room != this.socket.id) {
 
-                // Generate the response in a json format
-                const jsonResponseToRoom: JSON = <JSON><any>{
-                    "quittedSocket": this.socket.id
-                };
-
-                // Emit the successfully quit event to the lobby
-                this.io.to(room).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponseToRoom);
+                // Emit the SUCCESS event
+                const jsonResponse: JSON = JsonModelCreator.socketId(this.socket.id);
+                this.io.to(room).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponse);
 
                 const wasSocketTheLeader: boolean = await RoomUtils.isSocketLeaderOfALobby(this.socket.id);
                 if (wasSocketTheLeader) {

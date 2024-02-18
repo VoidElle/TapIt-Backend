@@ -4,6 +4,7 @@ import {Server, Socket} from "socket.io";
 import {Events} from "../../utils/events";
 import {RemoteSocket} from "socket.io/dist/broadcast-operator";
 import {DefaultEventsMap} from "socket.io/dist/typed-events";
+import {JsonModelCreator} from "../../utils/json/json_model_creator";
 
 export class GameScoreEvent implements EventBaseInterface {
 
@@ -25,7 +26,7 @@ export class GameScoreEvent implements EventBaseInterface {
         const socketsInRoom: RemoteSocket<DefaultEventsMap, any>[] = await this.io.in(this.lobbyId).fetchSockets();
 
         // Gather the victim's socket id
-        let victimId: String;
+        let victimId: string;
         socketsInRoom.map((socket: RemoteSocket<DefaultEventsMap, any>): void => {
             if (socket.id != this.socket.id) {
                 victimId = socket.id;
@@ -33,12 +34,8 @@ export class GameScoreEvent implements EventBaseInterface {
             }
         });
 
-        // Generate the response in a json format
-        const jsonResponse: JSON = <JSON><any>{
-            "attackerId": this.socket.id,
-            "victimId": victimId,
-        }
-
+        // Send the SUCCESS event
+        const jsonResponse: JSON = JsonModelCreator.attackerAndVictimSocketIds(this.socket.id, victimId);
         this.io.to(this.lobbyId).emit(Events.GAME_SCORE_RESPONSE_SUCCESS, jsonResponse);
 
     }

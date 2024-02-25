@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "test": "cd tests && tsc && cd .. && mocha 'dist/tests/*.js'",
-    "start": "tsc && node dist/src/app.js",
+    "start": "tsc && node dist/app.js",
     "lint": "eslint . --ext .ts",
     "db:update": "npm run db:migrate && npm run db:push",
     "db:migrate": "npx prisma migrate dev --name user-entity --create-only && npx prisma generate",

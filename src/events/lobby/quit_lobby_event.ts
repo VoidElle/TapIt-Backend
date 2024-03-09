@@ -2,7 +2,6 @@ import { EventBaseInterface } from "../../interfaces/event_base_interface";
 import { LoggerUtils, LogTypes } from "../../utils/loggerUtils";
 import {Server, Socket} from "socket.io";
 import { Events } from "../../utils/events";
-import {RoomUtils} from "../../utils/roomUtils";
 import {JsonModelCreator} from "../../utils/json/json_model_creator";
 
 export class QuitLobbyEvent implements EventBaseInterface {
@@ -28,12 +27,6 @@ export class QuitLobbyEvent implements EventBaseInterface {
         // Emit the SUCCESS event
         const jsonResponse: JSON = JsonModelCreator.socketId(this.socket.id);
         this.io.to(this.lobbyId).emit(Events.QUIT_LOBBY_RESPONSE_SUCCESS, jsonResponse);
-
-        const wasSocketTheLeader: boolean = await RoomUtils.isSocketLeaderOfALobby(this.socket.id);
-        if (wasSocketTheLeader) {
-            this.io.to(this.lobbyId).emit(Events.LEADER_LEFT_LOBBY);
-            await RoomUtils.deleteLobby(this.io, this.lobbyId);
-        }
 
     }
 

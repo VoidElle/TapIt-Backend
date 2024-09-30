@@ -7,13 +7,13 @@ import { Events } from "./utils/events";
 import { DisconnectionEvent } from "./events/disconnection_event";
 import { CreateLobbyEvent } from "./events/lobby/create_lobby_event";
 
-import connectDB from './db/connectDB'
 import {JoinLobbyEvent} from "./events/lobby/join_lobby_event";
 import {QuitLobbyEvent} from "./events/lobby/quit_lobby_event";
 import {PlayerChangeReadyStatusEvent} from "./events/lobby/player_change_ready_status";
 import {StartLobbyEvent} from "./events/lobby/start_lobby_event";
 import {GameScoreEvent} from "./events/game/game_score_event";
 import {GameWinEvent} from "./events/game/game_win_event";
+import connectDB from "./db/connectDB";
 
 
 const serverPort = 3000;

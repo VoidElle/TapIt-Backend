@@ -1,4 +1,4 @@
-export enum CustomEvents {
+export enum ClientEvents {
 
     // Core socket events
     CONNECTION = "connection",
@@ -6,7 +6,5 @@ export enum CustomEvents {
 
     // Lobby creation events
     CREATE_LOBBY_REQUEST = "CREATE_LOBBY_REQUEST",
-    CREATE_LOBBY_RESPONSE_SUCCESS = "CREATE_LOBBY_RESPONSE_SUCCESS",
-    CREATE_LOBBY_RESPONSE_FAIL = "CREATE_LOBBY_RESPONSE_FAIL",
 
 }

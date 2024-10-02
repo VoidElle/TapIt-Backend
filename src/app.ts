@@ -1,7 +1,7 @@
 import express from "express";
 import http from "http";
 import { Server, Socket } from "socket.io";
-import { CustomEvents } from "./enums/custom_events";
+import { ClientEvents } from "./enums/client_events";
 import { CustomLogger, LogType } from "./utils/custom_logger";
 import { ServerSingleton } from "./singletons/server_singleton";
 import { DisconnectionEvent } from "./events/disconnection_event";
@@ -17,7 +17,7 @@ const server = http.createServer(app);
 const serverSession: ServerSingleton = ServerSingleton.instance;
 serverSession.io = new Server(server);
 
-serverSession.io.on(CustomEvents.CONNECTION, socket => {
+serverSession.io.on(ClientEvents.CONNECTION, socket => {
     CustomLogger.log(LogType.INFO, `Socket connected (${socket.id})`);
     eventsHandling(socket);
 });
@@ -27,7 +27,7 @@ function eventsHandling(socket: Socket): void {
     const eventHandlers: EventHandlingType = {
 
         // Core events
-        [CustomEvents.DISCONNECT]: () => new DisconnectionEvent(new EventModel(undefined, socket)),
+        [ClientEvents.DISCONNECT]: () => new DisconnectionEvent(new EventModel(undefined, socket)),
 
         /*[Events.JOIN_LOBBY_REQUEST]: (lobbyId: string) => new JoinLobbyEvent(lobbyId, socket, io),
         [Events.QUIT_LOBBY_REQUEST]: (lobbyId: string) => new QuitLobbyEvent(lobbyId, socket, io),
@@ -36,8 +36,8 @@ function eventsHandling(socket: Socket): void {
     };
 
     // Loop for listening all the events
-    Object.keys(eventHandlers).forEach((event) => {
-        socket.on(event, (...args) => {
+    Object.keys(eventHandlers).forEach((event: string): void => {
+        socket.on(event, (...args: any[]): void => {
 
             const handler: EventBaseInterface = eventHandlers[event](...args);
             if (!handler || !handler.manageEvent) {

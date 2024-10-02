@@ -13,7 +13,7 @@ export class EventModel {
     toJson(): JSON {
         return <JSON><any>{
             "lobbyId": this.lobbyId,
-            "socket": this.socket,
+            "socketId": this.socket.id,
         };
     }
 

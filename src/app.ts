@@ -1,11 +1,13 @@
 import express from "express";
 import http from "http";
-import {Server, Socket} from "socket.io";
+import { Server, Socket } from "socket.io";
 import { CustomEvents } from "./enums/custom_events";
-import {CustomLogger, LogType} from "./utils/custom_logger";
-import {ServerSingleton} from "./singletons/server_singleton";
-import {DisconnectionEvent} from "./events/disconnection_event";
-import {EventModel} from "./models/event_model";
+import { CustomLogger, LogType } from "./utils/custom_logger";
+import { ServerSingleton } from "./singletons/server_singleton";
+import { DisconnectionEvent } from "./events/disconnection_event";
+import { EventModel } from "./models/event_model";
+import { EventBaseInterface } from "./interfaces/event_base_interface";
+import { EventHandlingType } from "./utils/custom_types";
 
 const serverPort = 3000;
 const app = express();
@@ -17,15 +19,15 @@ serverSession.io = new Server(server);
 
 serverSession.io.on(CustomEvents.CONNECTION, socket => {
     CustomLogger.log(LogType.INFO, `Socket connected (${socket.id})`);
-    eventHandling(socket);
+    eventsHandling(socket);
 });
 
-function eventHandling(socket: Socket) {
+function eventsHandling(socket: Socket): void {
 
-    const eventHandlers = {
+    const eventHandlers: EventHandlingType = {
 
         // Core events
-        [CustomEvents.DISCONNECT]: () => new DisconnectionEvent(new EventModel(undefined, socket)).manageEvent(),
+        [CustomEvents.DISCONNECT]: () => new DisconnectionEvent(new EventModel(undefined, socket)),
 
         /*[Events.JOIN_LOBBY_REQUEST]: (lobbyId: string) => new JoinLobbyEvent(lobbyId, socket, io),
         [Events.QUIT_LOBBY_REQUEST]: (lobbyId: string) => new QuitLobbyEvent(lobbyId, socket, io),
@@ -37,7 +39,7 @@ function eventHandling(socket: Socket) {
     Object.keys(eventHandlers).forEach((event) => {
         socket.on(event, (...args) => {
 
-            const handler = eventHandlers[event](...args);
+            const handler: EventBaseInterface = eventHandlers[event](...args);
             if (!handler || !handler.manageEvent) {
                 return;
             }

@@ -4,7 +4,7 @@ export enum ClientEvents {
     CONNECTION = "connection",
     DISCONNECT = "disconnecting",
 
-    // Lobby creation events
+    // Lobby events
     CREATE_LOBBY_REQUEST = "CREATE_LOBBY_REQUEST",
 
 }

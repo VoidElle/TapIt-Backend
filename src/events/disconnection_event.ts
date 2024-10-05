@@ -37,7 +37,7 @@ export class DisconnectionEvent implements EventBaseInterface {
 
                 // Considering that each socket joins a room that has his socket id,
                 // we need to check to not quit that for socket.io to work
-                if (room != this.eventModel.socket.id) {
+                if (room === this.eventModel.socket.id) {
                     return;
                 }
 

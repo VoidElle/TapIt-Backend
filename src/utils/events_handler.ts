@@ -23,14 +23,14 @@ export default function eventsHandling(socket: Socket): void {
 
     // Loop for listening all the events
     Object.keys(eventHandlers).forEach((event: string): void => {
-        socket.on(event, (...args: any[]): void => {
+        socket.on(event, async (...args: any[]): Promise<void> => {
 
             const handler: EventBaseInterface = eventHandlers[event](...args);
             if (!handler || !handler.manageEvent) {
                 return;
             }
 
-            handler.manageEvent();
+            await handler.manageEvent();
         });
     });
 

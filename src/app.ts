@@ -15,7 +15,7 @@ const serverSession: ServerSingleton = ServerSingleton.instance;
 serverSession.io = new Server(server);
 
 serverSession.io.on(ClientEvents.CONNECTION, socket => {
-    CustomLogger.log(LogType.INFO, `Socket connected (${socket.id})`);
+    CustomLogger.logEvent(LogType.INFO, ClientEvents.CONNECTION, `Socket connected -> ${socket.id}`);
     eventsHandling(socket);
 });
 

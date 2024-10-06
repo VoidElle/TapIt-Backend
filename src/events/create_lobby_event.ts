@@ -1,6 +1,7 @@
-import {EventBaseInterface} from "../interfaces/event_base_interface";
-import {EventModel} from "../models/event_model";
-import {CustomLogger, LogType} from "../utils/custom_logger";
+import { EventBaseInterface } from "../interfaces/event_base_interface";
+import { EventModel } from "../models/event_model";
+import { CustomLogger, LogType } from "../utils/custom_logger";
+import { ClientEvents } from "../enums/client_events";
 
 export class CreateLobbyEvent implements EventBaseInterface {
 
@@ -11,7 +12,7 @@ export class CreateLobbyEvent implements EventBaseInterface {
     }
 
     async manageEvent(): Promise<void> {
-        CustomLogger.log(LogType.INFO, `Create lobby event (${this.eventModel.socket.id})`);
+        CustomLogger.logEvent(LogType.INFO, ClientEvents.CREATE_LOBBY_REQUEST, `Create lobby event (${this.eventModel.socket.id})`);
     }
 
 }

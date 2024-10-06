@@ -1,8 +1,9 @@
-import {EventBaseInterface} from "../interfaces/event_base_interface";
-import {EventModel} from "../models/event_model";
-import {CustomLogger, LogType} from "../utils/custom_logger";
-import {eventsEmitter} from "../utils/events_emitter";
-import {ServerEvents} from "../enums/server_events";
+import { EventBaseInterface } from "../interfaces/event_base_interface";
+import { EventModel } from "../models/event_model";
+import { CustomLogger, LogType } from "../utils/custom_logger";
+import { eventsEmitter } from "../utils/events_emitter";
+import { ServerEvents } from "../enums/server_events";
+import { ClientEvents } from "../enums/client_events";
 
 /**
  *
@@ -12,6 +13,7 @@ import {ServerEvents} from "../enums/server_events";
  * Output to everybody inside the Room:
  * {
  *     "socket": socketId
+ *     ? "error: error
  * }
  */
 export class DisconnectionEvent implements EventBaseInterface {
@@ -24,7 +26,7 @@ export class DisconnectionEvent implements EventBaseInterface {
 
     public async manageEvent(): Promise<void> {
 
-        CustomLogger.log(LogType.INFO, `Socket disconnected (${this.eventModel.socket.id})`);
+        CustomLogger.logEvent(LogType.INFO, ClientEvents.DISCONNECT, `Socket disconnected -> ${this.eventModel.socket.id}`);
 
         const data = {
             "socket": this.eventModel.socket.id,
@@ -41,14 +43,17 @@ export class DisconnectionEvent implements EventBaseInterface {
                     return;
                 }
 
-                // Make the socket leave the lobby
+                // Make the socket leave the lobby and emit the success event
                 await this.eventModel.socket.leave(room);
-                CustomLogger.log(LogType.INFO, `Socket ${this.eventModel.socket.id} left lobby ${room}`);
-
-                // Emit the success event
                 eventsEmitter(room, ServerEvents.DISCONNECTION_RESPONSE_SUCCESS, data);
 
+                CustomLogger.logEvent(LogType.INFO, ClientEvents.DISCONNECT, `Socket ${this.eventModel.socket.id} left lobby ${room} successfully`);
+
             } catch (error) {
+
+                CustomLogger.logEvent(LogType.INFO, ClientEvents.DISCONNECT, `An error has occurred while making socket ${this.eventModel.socket.id} leave lobby ${room} | ${error}`);
+
+                data["error"] = error.toString();
                 eventsEmitter(room, ServerEvents.DISCONNECTION_RESPONSE_SUCCESS, data);
             }
         }
